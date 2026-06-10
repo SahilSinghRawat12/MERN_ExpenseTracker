@@ -33,12 +33,12 @@ const userSchema = new mongoose.Schema(
 );
 
 //before document is saved run this function
-userSchema.pre("save" , async function(next) {
+userSchema.pre("save" , async function() {
     
     // isModifies- if password is not changed -> then move ahead
     if(!this.isModified("password"))
     {
-        return next();
+        return;
     }
 
     // this -> refers to the current document (we can call the content of the document using this ex-> this.email)
@@ -47,11 +47,12 @@ userSchema.pre("save" , async function(next) {
         10
     );
 
-    next();
+
 }
 );
 
 
+//compares the login password with the hashed password inside database
 userSchema.methods.isPasswordCorrect = async function (password) {
 
     return await bcrypt.compare(

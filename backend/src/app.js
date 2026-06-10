@@ -2,6 +2,7 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import userRouter from "./routes/user.routes.js"
+import expenseRouter from "./routes/expense.routes.js"
 
 
 const app = express();
@@ -29,6 +30,8 @@ app.use(cookieParser());
 // routes
 
 app.use("/api/v1/users" , userRouter);
+app.use("/api/v1/expenses" , expenseRouter);
+
 
 
 export {app}

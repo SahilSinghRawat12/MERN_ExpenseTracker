@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser"
 import cors from "cors"
 import userRouter from "./routes/user.routes.js"
 import expenseRouter from "./routes/expense.routes.js"
+import { errorHandler } from "./middleware/error.middleware.js"
 
 
 const app = express();
@@ -32,6 +33,9 @@ app.use(cookieParser());
 app.use("/api/v1/users" , userRouter);
 app.use("/api/v1/expenses" , expenseRouter);
 
+
+//middleware
+app.use(errorHandler);
 
 
 export {app}

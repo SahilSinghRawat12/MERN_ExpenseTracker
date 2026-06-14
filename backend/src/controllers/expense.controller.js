@@ -241,7 +241,7 @@ const deleteExpense = async (req , res) => {
 
 }
 
-    const getExpenseStats = async (req , res) => {
+const getExpenseStats = async (req , res) => {
         //Aggregation pipeline
         const stats = await Expense.aggregate([
             {
@@ -300,6 +300,58 @@ const deleteExpense = async (req , res) => {
 }
 
 
+const getMonthlyAnalytics = async (req , res) => {
+    const monthlyData = await Expense.aggregate([
+        {
+            $match: {
+                owner: req.user._id
+            }
+        },
+        {
+            $group: {
+
+                _id: {
+                    year: {
+                        $year: "$expenseDate"
+                    },
+
+                    month: {
+                        $month: "$expenseDate"
+                    }
+                },
+
+                totalAmount: {
+                    $sum: "$amount"
+                },
+
+                totalExpenses: {
+                    $sum: 1
+                }
+            }
+        },
+
+        {
+            $sort: {
+                "_id.year":1,
+                "_id.month":1
+            }
+        }
+    ]);
+
+    //cleaning up aggregation result before sending it to the frontend
+    const formattedData = monthlyData.map(item => ({
+        year: item._id.year,
+        month: item._id.month,
+        totalAmount: item._id.totalAmount,
+        totalExpenses: item.totalExpenses
+    }));
+
+    return res.status(200)
+    .json({
+        getMonthlyAnalytics: formattedData
+    });
+}
+
 
 
 export { 
@@ -308,5 +360,6 @@ export {
     getExpenseById,
     updateExpense,
     deleteExpense,
-    getExpenseStats
+    getExpenseStats,
+    getMonthlyAnalytics
  };

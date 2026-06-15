@@ -1,6 +1,9 @@
 import { Expense } from "../models/expense.model.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
-const createExpense = async (req , res) => {
+const createExpense =
+ asyncHandler(
+async (req , res) => {
     //Get Data
     const {
         title,
@@ -11,13 +14,13 @@ const createExpense = async (req , res) => {
     } = req.body;
 
     // validate the data
-    if(!title || !amount || !category)
-    {
-        return res.status(400)
-        .json({
-            message: "Title, Amount and Category are required"
-        });
-    }
+    // if(!title || !amount || !category)
+    // {
+    //     return res.status(400)
+    //     .json({
+    //         message: "Title, Amount and Category are required"
+    //     });
+    // }
 
     //Get current user using jwt
     const owner = req.user._id;
@@ -37,9 +40,11 @@ const createExpense = async (req , res) => {
         message: "Expense created successfully",
         expense
     });
-};
+});
 
-const getUserExpense = async (req , res) => {
+const getUserExpense =
+    asyncHandler(
+async (req , res) => {
     
     //Extract Queries
     const {
@@ -103,9 +108,11 @@ const getUserExpense = async (req , res) => {
             totalExpenses
            });
 
-}
+});
 
-const getExpenseById = async (req , res) => {
+const getExpenseById = 
+    asyncHandler(
+async (req , res) => {
     //Get expense id
     const { expenseId } = req.params;  // or const expenseId = req.params.expenseId;
 
@@ -136,10 +143,12 @@ const getExpenseById = async (req , res) => {
                 expense
             });
 
-}
+});
 
 
-const updateExpense = async (req , res) => {
+const updateExpense =
+asyncHandler(
+async (req , res) => {
     //get expenseId
     const {expenseId} = req.params;
 
@@ -202,10 +211,12 @@ const updateExpense = async (req , res) => {
         message: "Expense updated successfully",
         expense
     });
-}
+});
 
 
-const deleteExpense = async (req , res) => {
+const deleteExpense =
+asyncHandler(
+async (req , res) => {
     //get expense id
     const {expenseId} = req.params;
 
@@ -239,9 +250,11 @@ const deleteExpense = async (req , res) => {
         message: "Expense deleted successfully"
     });
 
-}
+});
 
-const getExpenseStats = async (req , res) => {
+const getExpenseStats = 
+asyncHandler(
+async (req , res) => {
         //Aggregation pipeline
         const stats = await Expense.aggregate([
             {
@@ -297,10 +310,12 @@ const getExpenseStats = async (req , res) => {
 
                     categoryBreakdown: categoryStats
                 });
-}
+});
 
 
-const getMonthlyAnalytics = async (req , res) => {
+const getMonthlyAnalytics = 
+asyncHandler(
+async (req , res) => {
     const monthlyData = await Expense.aggregate([
         {
             $match: {
@@ -350,7 +365,7 @@ const getMonthlyAnalytics = async (req , res) => {
     .json({
         getMonthlyAnalytics: formattedData
     });
-}
+});
 
 
 

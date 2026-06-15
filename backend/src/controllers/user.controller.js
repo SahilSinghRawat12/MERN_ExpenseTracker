@@ -1,8 +1,11 @@
 import { User } from "../models/user.model.js"
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 
 //Helper function -> reusable function for generating tokens
-const generateAccessAndRefreshToken = async (userId) => {   
+const generateAccessAndRefreshToken = 
+asyncHandler(
+async (userId) => {   
 
     const user = await User.findById(userId);
 
@@ -20,9 +23,11 @@ const generateAccessAndRefreshToken = async (userId) => {
         accessToken,
         refreshToken
     }
-}
+});
 
-const registerUser = async ( req , res ) => {
+const registerUser = 
+asyncHandler(
+async ( req , res ) => {
 
     //Get Data
     const {
@@ -76,10 +81,12 @@ const registerUser = async ( req , res ) => {
                 message: "User registered successfully",
                 user: createdUser
             })
-};
+});
 
 
-const loginUser = async ( req , res ) => {
+const loginUser = 
+asyncHandler(
+async ( req , res ) => {
     //Extract Data
     const {email , password} = req.body;
 
@@ -168,9 +175,11 @@ const loginUser = async ( req , res ) => {
             });
 
 
-}
+});
 
-const logoutUser = async (req , res) => {
+const logoutUser = 
+asyncHandler(
+async (req , res) => {
     
     // Remove refresh token when user logout
     await User.findByIdAndUpdate(
@@ -199,9 +208,11 @@ const logoutUser = async (req , res) => {
         .json({
             message: "User loggedOut successfully"
         });
-};
+});
 
-const refreshAccessToken = async (req , res) => {
+const refreshAccessToken = 
+asyncHandler(
+async (req , res) => {
     // Get refresh token from cookies
     const incomingRefreshToken = req.cookies.refreshToken;
 
@@ -250,7 +261,7 @@ const refreshAccessToken = async (req , res) => {
             });
 
 
-}
+});
 
 
 

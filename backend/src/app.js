@@ -11,6 +11,13 @@ import { apiLimiter } from "./middleware/ratelimit.middleware.js"
 
 const app = express();
 
+// Trust Render proxy
+app.set("trust proxy", 1);
+
+//security middleware
+app.use(helmet());
+app.use("/api" , apiLimiter);
+
 //global middlewares
 
 app.use(
@@ -40,9 +47,6 @@ app.use("/api/v1/budgets" ,budgetRouter );
 //middleware
 app.use(errorHandler);
 
-//security middleware
-app.use(helmet());
 
-app.use("/api" , apiLimiter);
 
 export {app}

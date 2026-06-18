@@ -4,26 +4,29 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 //Helper function -> reusable function for generating tokens
 const generateAccessAndRefreshToken = 
-asyncHandler(
 async (userId) => {   
 
-    const user = await User.findById(userId);
-
-    const accessToken = user.generateAccessToken();
-
-    const refreshToken = user.generateRefreshToken();
-
-    user.refreshToken = refreshToken;
-
-    await user.save({
-        validateBeforeSave: false
-    });
-
-    return {
-        accessToken,
-        refreshToken
+    try {
+        const user = await User.findById(userId);
+    
+        const accessToken = user.generateAccessToken();
+    
+        const refreshToken = user.generateRefreshToken();
+    
+        user.refreshToken = refreshToken;
+    
+        await user.save({
+            validateBeforeSave: false
+        });
+    
+        return {
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        throw error;
     }
-});
+};
 
 const registerUser = 
 asyncHandler(

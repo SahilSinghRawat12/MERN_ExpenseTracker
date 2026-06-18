@@ -1,5 +1,7 @@
 import { Expense } from "../models/expense.model.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { Parser } from "json2csv"
+import PDFDocument from "pdfkit"
 
 const createExpense =
  asyncHandler(
@@ -368,6 +370,113 @@ async (req , res) => {
 });
 
 
+const exportCSV = async(req , res) => {
+    const expenses = await Expense.find({
+        owner: req.user._id
+    });
+
+    //format data 
+    const formattedExpenses = expenses.map(expense => ({
+
+    title:
+      expense.title,
+
+    amount:
+      expense.amount,
+
+    category:
+      expense.category,
+
+    date:
+      expense.createdAt
+    }));
+
+    //generate csv 
+    const parser = new Parser();
+    const csv = parser.parse(formattedExpenses);
+
+    //set headers-> Tell browser/Postman this is a file.
+    res.header(
+        "Content-Type",
+        "text/csv"
+    );
+
+    //this forces download
+    res.attachment(
+        "expenses.csv"
+    )
+
+    //send file
+    return res.send(csv);
+};
+
+
+const exportPdf = async (req , res)=> {
+    const expenses = await Expense.find({
+        owner: req.user._id
+    });
+
+    //create pdf
+    const doc = new PDFDocument();
+
+    //set headers
+    res.setHeader(
+        "Content-Type",
+        "application/pdf"
+    );
+
+    res.setHeader(
+        "content-Disposition",
+        'attachment; filename="expense-report.pdf"'
+    );
+
+    //pipe pdf-> This sends PDF directly to browser/Postman.
+    doc.pipe(res);
+
+    //Add title
+    doc.fontSize(20).
+    text(
+        "Expense Report",
+        {
+            align:"center"
+        }
+    );
+
+    //add space
+    doc.moveDown();
+
+    //calculate total 
+    const totalAmount = 
+    expenses.reduce(
+        (sum , expense) => sum+expense.amount,
+        0
+    );
+
+    //add summary
+    doc.text(
+  `Total Expenses: ${expenses.length}`
+    );
+
+    doc.text(
+    `Total Amount: ₹${totalAmount}`
+    );
+
+    doc.moveDown();
+
+    //add expeense list
+    expenses.forEach(
+        expense => {
+            doc.text(
+                `${expense.title}
+                - ₹${expense.amount}
+                - ${expense.category}`
+            );
+        }
+    );
+
+    //finalize pdf
+    doc.end();
+}
 
 export { 
     createExpense,
@@ -376,5 +485,7 @@ export {
     updateExpense,
     deleteExpense,
     getExpenseStats,
-    getMonthlyAnalytics
+    getMonthlyAnalytics,
+    exportCSV,
+    exportPdf
  };

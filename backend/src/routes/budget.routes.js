@@ -7,7 +7,8 @@ import {
 from "../middleware/auth.middleware.js";
 
 import {
-  createBudget
+  createBudget,
+  getBudgetSummary
 }
 from "../controllers/budget.controller.js";
 
@@ -19,5 +20,7 @@ router.post(
   verifyJWT,
   createBudget
 );
+
+router.get("/summary", verifyJWT ,getBudgetSummary)
 
 export default router;
